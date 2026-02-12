@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { chromium, defineConfig, devices } from '@playwright/test';
 import  dotenv  from  'dotenv';
+import { defineBddConfig } from 'playwright-bdd';
 dotenv.config();
 
 /** @type {'chromium' | 'firefox' | 'webkit'} */
@@ -17,8 +18,12 @@ const browser = (process.env.BROWSER_NAME.toLowerCase() || 'chromium');
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
+const testDir = defineBddConfig({
+  paths: ['tests/features/**/*.feature'],
+  require: ['tests/step_definition/*.step.{ts,js}']
+});
 export default defineConfig({
-  testDir: './tests',
+  testDir,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -54,6 +59,7 @@ export default defineConfig({
   projects: [
     {
       name: 'Local',
+      testMatch:'.features-gen/tests/features/**/*.spec.js',
       use: {
         viewport: null,
        },
@@ -97,4 +103,3 @@ export default defineConfig({
   //   reuseExistingServer: !process.env.CI,
   // },
 });
-
